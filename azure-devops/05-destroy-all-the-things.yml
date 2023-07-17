@@ -1,0 +1,110 @@
+name: destroy-all-the-things
+
+trigger: none
+
+variables:
+  - group: aws-keys
+  - name: AWS_REGION
+    value: AATT_AWS_REGION # This value was modified by the initial-setup python script
+  - name: APP_NAME
+    value: AATT_APP_NAME # This value was modified by the initial-setup python script
+
+pool:
+  vmImage: 'ubuntu-latest' 
+  # If you are using a self-hosted agent, comment out the previous line and uncomment the following three
+  # name: <agent-pool-name> # Insert here the name of the agent pool you created
+  # demands:
+  #   - agent.name -equals <agent-name> # Insert here the name of the agent you created
+
+jobs:
+- job: DeleteK8SResources
+  displayName: 'Delete Kubernetes Resources'
+  steps:
+
+  - task: HelmInstaller@0
+    inputs:
+      displayName: Install helm
+      helmVersion: '3.11.2'
+      installKubectl: true
+
+  # - task: KubectlInstaller@0
+  #   inputs:
+  #     kubectlVersion: '1.27.1'
+
+  - task: AWSCLI@1
+    displayName: 'Update KubeConfig'
+    inputs:
+      awsCredentials: 'aws'
+      regionName: '$(AWS_REGION)' 
+      awsCommand: 'eks'
+      awsSubCommand: 'update-kubeconfig'
+      awsArguments: '--name $(APP_NAME)-cluster --region $(AWS_REGION)' 
+
+  - script: | 
+      mkdir ~/.aws
+      echo -e "[default]\naws_access_key_id = $(aws_access_key_id)\naws_secret_access_key = $(aws_secret_access_key)" > ~/.aws/credentials
+      echo -e "[default]\nregion = $(AWS_REGION)"> ~/.aws/config 
+    displayName: 'Configure AWS Profile'
+
+
+        # kubectl patch -n argocd applications.argoproj.io --all -p '{"metadata":{"finalizers":[]}}' --type=merge
+  - script: | # We need to remove the finalizers from the applications in order to uninstall ArgoCD properly 
+      # PROBAR SACAR LOS PATCH!!!!!!
+      # kubectl patch -n argocd applications.argoproj.io $(APP_NAME)-back-dev -p '{"metadata":{"finalizers":[]}}' --type=merge
+      # kubectl patch -n argocd applications.argoproj.io $(APP_NAME)-back-stage -p '{"metadata":{"finalizers":[]}}' --type=merge
+      # kubectl patch -n argocd applications.argoproj.io $(APP_NAME)-back-prod -p '{"metadata":{"finalizers":[]}}' --type=merge
+      # kubectl patch -n argocd applications.argoproj.io $(APP_NAME)-front-dev -p '{"metadata":{"finalizers":[]}}' --type=merge
+      # kubectl patch -n argocd applications.argoproj.io $(APP_NAME)-front-stage -p '{"metadata":{"finalizers":[]}}' --type=merge
+      # kubectl patch -n argocd applications.argoproj.io $(APP_NAME)-front-prod -p '{"metadata":{"finalizers":[]}}' --type=merge
+      # kubectl patch -n argocd applications.argoproj.io kube-prometheus-stack -p '{"metadata":{"finalizers":[]}}' --type=merge
+      kubectl delete -n argocd applications.argoproj.io argocd-apps
+      kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-back-dev
+      kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-back-stage
+      kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-back-prod
+      kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-front-dev
+      kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-front-stage
+      kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-front-prod
+      kubectl delete -n argocd applications.argoproj.io kube-prometheus-stack
+      helm uninstall -n argocd argocd
+    displayName: 'Delete ArgoCD'
+
+
+  # Before deleting all Ingresses we eliminate ArgoCD because if we don't, it will re-deploy the Ingresses, automatically creating untracked AWS Application Load Balancers, which would mess with the terraform destroy  
+  # - script: | 
+  #       # kubectl delete applications.argoproj.io argocd-app
+  #       kubectl delete namespace argocd
+  #   displayName: 'Delete ArgoCD'
+
+  - script: | 
+        kubectl delete ingress --all --all-namespaces
+    displayName: 'Delete Ingresses'
+
+
+
+- job: DeleteAWSInfrastructure
+  displayName: 'Delete AWS Infrastructure'
+  dependsOn: DeleteK8SResources
+  steps:
+  - task: TerraformInstaller@0
+    displayName: Install terraform
+    inputs:
+      terraformVersion: '1.4.6'
+
+  - task: TerraformCLI@0
+    displayName: 'Terraform Init'
+    inputs:
+      command: init
+      workingDirectory: 'terraform/aws'
+      backendType: aws
+      backendServiceAws: aws
+      providerServiceAws: 'aws'
+      providerAwsRegion: $(AWS_REGION)
+
+  - task: TerraformCLI@0
+    displayName: 'Terraform Destroy AWS Infra'
+    inputs:
+      command: destroy
+      workingDirectory: 'terraform/aws'
+      providerServiceAws: 'aws'
+      providerAwsRegion: $(AWS_REGION) 
+    continueOnError: true

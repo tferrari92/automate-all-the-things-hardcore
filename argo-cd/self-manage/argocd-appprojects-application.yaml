@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-appprojects
+  namespace: argocd
+spec:  
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  project: argocd
+  source:
+    repoURL: https://github.com/AATT_GITHUB_USERNAME/automate-all-the-things.git # This value was modified by the initial-setup python script
+    path: argo-cd/self-manage/appprojects
+    directory:
+      recurse: true
+      jsonnet: {}
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
