@@ -10,7 +10,8 @@ resource "aws_key_pair" "ssh-keys" {
 resource "aws_instance" "ssh_host" {
   ami           = "ami-024e6efaf93d85776" # Ubuntu 22.04
   instance_type = "t2.micro"
-  key_name      = "${aws_key_pair.ssh-keys.id}"
+  key_name      = aws_key_pair.ssh-keys.name
+  # key_name      = "${aws_key_pair.ssh-keys.id}"
 
   subnet_id              = aws_subnet.public-subnet-c.id
   vpc_security_group_ids = [aws_security_group.default.id]
