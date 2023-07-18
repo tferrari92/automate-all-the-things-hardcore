@@ -47,16 +47,7 @@ jobs:
     displayName: 'Configure AWS Profile'
 
 
-        # kubectl patch -n argocd applications.argoproj.io --all -p '{"metadata":{"finalizers":[]}}' --type=merge
-  - script: | # We need to remove the finalizers from the applications in order to uninstall ArgoCD properly 
-      # PROBAR SACAR LOS PATCH!!!!!!
-      # kubectl patch -n argocd applications.argoproj.io $(APP_NAME)-back-dev -p '{"metadata":{"finalizers":[]}}' --type=merge
-      # kubectl patch -n argocd applications.argoproj.io $(APP_NAME)-back-stage -p '{"metadata":{"finalizers":[]}}' --type=merge
-      # kubectl patch -n argocd applications.argoproj.io $(APP_NAME)-back-prod -p '{"metadata":{"finalizers":[]}}' --type=merge
-      # kubectl patch -n argocd applications.argoproj.io $(APP_NAME)-front-dev -p '{"metadata":{"finalizers":[]}}' --type=merge
-      # kubectl patch -n argocd applications.argoproj.io $(APP_NAME)-front-stage -p '{"metadata":{"finalizers":[]}}' --type=merge
-      # kubectl patch -n argocd applications.argoproj.io $(APP_NAME)-front-prod -p '{"metadata":{"finalizers":[]}}' --type=merge
-      # kubectl patch -n argocd applications.argoproj.io kube-prometheus-stack -p '{"metadata":{"finalizers":[]}}' --type=merge
+  - script: | 
       kubectl delete -n argocd applications.argoproj.io argocd-apps
       kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-back-dev
       kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-back-stage
@@ -66,7 +57,7 @@ jobs:
       kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-front-prod
       kubectl delete -n argocd applications.argoproj.io kube-prometheus-stack
       helm uninstall -n argocd argocd
-    displayName: 'Delete ArgoCD'
+    displayName: 'Delete Applications & ArgoCD'
 
 
   # Before deleting all Ingresses we eliminate ArgoCD because if we don't, it will re-deploy the Ingresses, automatically creating untracked AWS Application Load Balancers, which would mess with the terraform destroy  
