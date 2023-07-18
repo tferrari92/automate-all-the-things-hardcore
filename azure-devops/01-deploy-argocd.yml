@@ -45,7 +45,7 @@ steps:
     awsArguments: '--name $(APP_NAME)-cluster --region $(AWS_REGION)' 
 
 - script: | 
-    helm install argocd -n argocd helm/argo-cd --values helm/argo-cd/values-custom.yaml --dependency-update --create-namespace
+    helm install argocd -n argocd helm/infra/argo-cd --values helm/infra/argo-cd/values-custom.yaml --dependency-update --create-namespace
   displayName: 'Deploy Argocd'
 
 # - task: HelmDeploy@0
