@@ -27,10 +27,6 @@ jobs:
       helmVersion: '3.11.2'
       installKubectl: true
 
-  # - task: KubectlInstaller@0
-  #   inputs:
-  #     kubectlVersion: '1.27.1'
-
   - task: AWSCLI@1
     displayName: 'Update KubeConfig'
     inputs:
@@ -46,7 +42,7 @@ jobs:
       echo -e "[default]\nregion = $(AWS_REGION)"> ~/.aws/config 
     displayName: 'Configure AWS Profile'
 
-
+  # Before deleting all Ingresses we eliminate ArgoCD because if we don't, it will re-deploy the Ingresses, automatically creating untracked AWS Application Load Balancers, which would mess with the terraform destroy  
   - script: | 
       kubectl delete -n argocd applications.argoproj.io argocd-apps
       kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-back-dev
@@ -55,17 +51,13 @@ jobs:
       kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-front-dev
       kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-front-stage
       kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-front-prod
-      kubectl delete -n argocd applications.argoproj.io kube-prometheus-stack
+      kubectl delete -n argocd applications.argoproj.io grafana
+      kubectl delete -n argocd applications.argoproj.io loki-stack
+      kubectl delete -n argocd applications.argoproj.io prometheus
       helm uninstall -n argocd argocd
     displayName: 'Delete Applications & ArgoCD'
 
-
-  # Before deleting all Ingresses we eliminate ArgoCD because if we don't, it will re-deploy the Ingresses, automatically creating untracked AWS Application Load Balancers, which would mess with the terraform destroy  
-  # - script: | 
-  #       # kubectl delete applications.argoproj.io argocd-app
-  #       kubectl delete namespace argocd
-  #   displayName: 'Delete ArgoCD'
-
+  # Before deleting all infra we make sure there are no existing ingresses so the terraform destroy isn't messed up by the existance of untracked AWS Application Load Balancers
   - script: | 
         kubectl delete ingress --all --all-namespaces
     displayName: 'Delete Ingresses'

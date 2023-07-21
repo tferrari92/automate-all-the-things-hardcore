@@ -48,18 +48,6 @@ steps:
     helm install argocd -n argocd helm/infra/argo-cd --values helm/infra/argo-cd/values-custom.yaml --dependency-update --create-namespace
   displayName: 'Deploy Argocd'
 
-# - task: HelmDeploy@0
-#   displayName: Deploy ArgoCD
-#   inputs:
-#     connectionType: 'None'
-#     releaseName: 'argocd' # Required for self-management to work
-#     namespace: 'argocd' # Required
-#     command: 'install'
-#     chartType: 'FilePath'
-#     chartPath: 'helm/infra/argo-cd'
-#     valueFile: 'helm/infra/argo-cd/values-custom.yaml'
-#     arguments: '--dependency-update --create-namespace'
-
 # This deploys the necessary resources for ArgoCD to be able to manage itslef
 - script: |    
     # We first create an ArgoCD AppProject called "argocd" where all ArgoCD self-managment resources will exist.
@@ -97,6 +85,12 @@ steps:
     done
     kubectl get ingress -n argocd $(kubectl get ingress -n argocd | awk 'NR>1{print $1}') -o=jsonpath="{'http://'}{.status.loadBalancer.ingress[].hostname}{'\n'}" > argocd-access.txt
     echo "admin" >> argocd-access.txt
+    # PROBANDO SI ES UNA CUESTION DE TIEMPO. BORRAR!
+    # sleep 60
+    while [[ $(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}") == '' ]]; do
+      echo "Secret is not ready. Checking again in 5 seconds..."
+      sleep 5
+    done
     echo $(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d) >> argocd-access.txt
   displayName: 'Save Access'
 

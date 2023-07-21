@@ -1,4 +1,4 @@
-name: deploy-monitoring
+name: deploy-observability
 
 trigger: none
 
@@ -18,60 +18,137 @@ pool:
   #   - agent.name -equals <agent-name> # Insert here the name of the agent you created
 
 
-steps:
-# # In this case it's necessary to specify the checkout with the persistCredential options set to true. This will enable us to push the changes to the repo.
-- checkout: self
-  persistCredentials: true
+stages:
+- stage: DeployPrometheus
+  displayName: 'Deploy Prometheus'
+  jobs:
+  - job: DeployPrometheusJob
+    displayName: 'Deploy Prometheus Job'
+    steps:
+    # # In this case it's necessary to specify the checkout with the persistCredential options set to true. This will enable us to push the changes to the repo.
+    - checkout: self
+      persistCredentials: true
 
-##################################### PARA PROMETHEUS!!!!!!
-- script: |
-    sed -i 's/^#//' argo-cd/applications/infra/prometheus-application.yaml
-  displayName: 'Uncomment the contents of prometheus-application.yaml'
-
-##################################### PARA PROMETHEUS!!!!!!
-- script: |
-    git config --global user.email "AzureDevOps@Build&DeployAppPipeline.com"
-    git config --global user.name "Azure DevOps - Build & Deploy App Pipeline"
-    git checkout -b main
-    git add argo-cd/applications/infra/prometheus-application.yaml
-    git commit -m "Uncommented content of argo-cd/applications/infra/prometheus-application.yaml by Azure DevOps"
-    git push --set-upstream origin main
-  displayName: 'Push changes to GitHub'
-
-- task: KubectlInstaller@0
-  inputs:
-    kubectlVersion: '1.27.1'
-
-- script: | 
-    mkdir ~/.aws
-    echo -e "[default]\naws_access_key_id = $(aws_access_key_id)\naws_secret_access_key = $(aws_secret_access_key)" > ~/.aws/credentials
-    echo -e "[default]\nregion = $(AWS_REGION)"> ~/.aws/config 
-  displayName: 'Configure AWS Profile'
-
-- task: AWSCLI@1
-  displayName: 'Update KubeConfig'
-  inputs:
-    awsCredentials: 'aws'
-    regionName: '$(AWS_REGION)' 
-    awsCommand: 'eks'
-    awsSubCommand: 'update-kubeconfig'
-    awsArguments: '--name $(APP_NAME)-cluster --region $(AWS_REGION)'
-
-##################################### PARA PROMETHEUS!!!!!!
-- script: |
-    while [[ $(kubectl get ingress -n observability $(kubectl get ingress -n observability | awk 'NR>1{print $1}') -o 'jsonpath={.status.loadBalancer.ingress[0].hostname}') == '' ]]; do
-      echo "Ingress is not ready. Checking again in 5 seconds..."
-      sleep 5
-    done
-    kubectl get ingress -n observability $(kubectl get ingress -n observability | awk 'NR>1{print $1}') -o=jsonpath="{'http://'}{.status.loadBalancer.ingress[].hostname}{'\n'}" > prometheus-access.txt
-    echo "admin" >> prometheus-access.txt
-    echo "prom-operator" >> prometheus-access.txt
-  displayName: 'Save Access'
+     # Every time the pipeline performs a "checkout" step it will checkout the same commit, so we need this step to pull for the changes commited in the previous stage   
+    - script: |
+        git pull origin main
+      displayName: Update repo
+    
+    - script: |
+        sed -i 's/^#//' argo-cd/applications/infra/prometheus-application.yaml
+      displayName: 'Uncomment the contents of prometheus-application.yaml'
+    
+    - script: |
+        git config --global user.email "AzureDevOps@Build&DeployAppPipeline.com"
+        git config --global user.name "Azure DevOps - Build & Deploy App Pipeline"
+        git checkout -b main
+        git add argo-cd/applications/infra/prometheus-application.yaml
+        git commit -m "Uncommented content of argo-cd/applications/infra/prometheus-application.yaml by Azure DevOps"
+        git push --set-upstream origin main
+      displayName: 'Push changes to GitHub'
 
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Export Access'
-  inputs:
-    PathtoPublish: 'grafana-access.txt'
-    ArtifactName: 'Access'
-    publishLocation: 'Container'
+
+
+- stage: DeployLoki
+  displayName: 'Deploy Loki'
+  jobs:
+  - job: DeployLokiJob
+    displayName: 'Deploy Loki Job'
+    steps:
+    # # In this case it's necessary to specify the checkout with the persistCredential options set to true. This will enable us to push the changes to the repo.
+    - checkout: self
+      persistCredentials: true
+
+    # Every time the pipeline performs a "checkout" step it will checkout the same commit, so we need this step to pull for the changes commited in the previous stage   
+    - script: |
+        git pull origin main
+      displayName: Update repo
+    
+    - script: |
+        sed -i 's/^#//' argo-cd/applications/infra/loki-stack-application.yaml
+      displayName: 'Uncomment the contents of loki-stack-application.yaml'
+    
+    - script: |
+        git config --global user.email "AzureDevOps@Build&DeployAppPipeline.com"
+        git config --global user.name "Azure DevOps - Build & Deploy App Pipeline"
+        git checkout -b main
+        git add argo-cd/applications/infra/loki-stack-application.yaml
+        git commit -m "Uncommented content of argo-cd/applications/infra/loki-stack-application.yaml by Azure DevOps"
+        git push --set-upstream origin main
+      displayName: 'Push changes to GitHub'
+
+
+
+
+- stage: DeployGrafana
+  displayName: 'Deploy Grafana'
+  jobs:
+  - job: DeployGrafanaJob
+    displayName: 'Deploy Grafana Job'
+    steps:
+    # # In this case it's necessary to specify the checkout with the persistCredential options set to true. This will enable us to push the changes to the repo.
+    - checkout: self
+      persistCredentials: true
+
+    # Every time the pipeline performs a "checkout" step it will checkout the same commit, so we need this step to pull for the changes commited in the previous stage   
+    - script: |
+        git pull origin main
+      displayName: Update repo
+    
+    - script: |
+        sed -i 's/^#//' argo-cd/applications/infra/grafana-application.yaml
+      displayName: 'Uncomment the contents of grafana-application.yaml'
+    
+    - script: |
+        git config --global user.email "AzureDevOps@Build&DeployAppPipeline.com"
+        git config --global user.name "Azure DevOps - Build & Deploy App Pipeline"
+        git checkout -b main
+        git add argo-cd/applications/infra/grafana-application.yaml
+        git commit -m "Uncommented content of argo-cd/applications/infra/grafana-application.yaml by Azure DevOps"
+        git push --set-upstream origin main
+      displayName: 'Push changes to GitHub'
+    
+    - task: KubectlInstaller@0
+      inputs:
+        kubectlVersion: '1.27.1'
+    
+    - script: | 
+        mkdir ~/.aws
+        echo -e "[default]\naws_access_key_id = $(aws_access_key_id)\naws_secret_access_key = $(aws_secret_access_key)" > ~/.aws/credentials
+        echo -e "[default]\nregion = $(AWS_REGION)"> ~/.aws/config 
+      displayName: 'Configure AWS Profile'
+    
+    - task: AWSCLI@1
+      displayName: 'Update KubeConfig'
+      inputs:
+        awsCredentials: 'aws'
+        regionName: '$(AWS_REGION)' 
+        awsCommand: 'eks'
+        awsSubCommand: 'update-kubeconfig'
+        awsArguments: '--name $(APP_NAME)-cluster --region $(AWS_REGION)'
+    
+    - script: |
+        while [[ $(kubectl -n observability get ingress $(kubectl get ingress -n observability | awk 'NR>1{print $1}') -o 'jsonpath={.status.loadBalancer.ingress[0].hostname}') == '' ]]; do
+          echo "Ingress is not ready. Checking again in 5 seconds..."
+          sleep 5
+        done
+        kubectl get ingress -n observability $(kubectl get ingress -n observability | awk 'NR>1{print $1}') -o=jsonpath="{'http://'}{.status.loadBalancer.ingress[].hostname}{'\n'}" > grafana-access.txt
+       
+        echo "admin" >> grafana-access.txt
+        
+        while [[ $(kubectl get secret -n observability grafana -o jsonpath="{.data.admin-password}") == '' ]]; do
+          echo "Secret is not ready. Checking again in 5 seconds..."
+          sleep 5
+        done
+        
+        echo $(kubectl -n observability get secret grafana -o jsonpath="{.data.admin-password}" | base64 -d) >> grafana-access.txt
+      displayName: 'Save Access'
+    
+    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Export Access'
+      inputs:
+        PathtoPublish: 'grafana-access.txt'
+        ArtifactName: 'Access'
+        publishLocation: 'Container'

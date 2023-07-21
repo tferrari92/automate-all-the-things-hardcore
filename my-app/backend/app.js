@@ -10,6 +10,12 @@ const redisClient = new Redis({
   // password: process.env.REDIS_PASS, // Replace with your Redis password
 });
 
+// Custom middleware to log incoming requests
+app.use((req, res, next) => {
+  console.log(`Received ${req.method} request at: ${req.url}`);
+  next();
+});
+
 // Retrieve the visitor count from Redis
 async function getAndIncrementVisitorCount() {
   try {

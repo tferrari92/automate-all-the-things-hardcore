@@ -95,7 +95,7 @@ resource "aws_eks_node_group" "private-nodes" {
   ]
 
   capacity_type  = "ON_DEMAND"
-  instance_types = ["t3.medium"] # TRY MEDIUM AGAIN!!! Had to make it large for the kube-prometheus-stack to work
+  instance_types = ["t3.large"]
 
   scaling_config {
     desired_size = 2
