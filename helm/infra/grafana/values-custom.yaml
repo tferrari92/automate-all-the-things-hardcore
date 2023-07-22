@@ -52,12 +52,12 @@ dashboards: # Commented dashboards are outdated and must be fixed manually
     kubernetesViewsNodes: # https://grafana.com/grafana/dashboards/15759-kubernetes-views-nodes/
       gnetId: 15759
       revision: 19
-    kubernetesSystemAPIServer: # https://grafana.com/grafana/dashboards/15761-kubernetes-system-api-server/
-      gnetId: 15761
-      revision: 13
-    kubernetesSystemCoreDNS: # https://grafana.com/grafana/dashboards/15762-kubernetes-system-coredns/
-      gnetId: 15762
-      revision: 13
+    # kubernetesSystemAPIServer: # https://grafana.com/grafana/dashboards/15761-kubernetes-system-api-server/
+    #   gnetId: 15761
+    #   revision: 13
+    # kubernetesSystemCoreDNS: # https://grafana.com/grafana/dashboards/15762-kubernetes-system-coredns/
+    #   gnetId: 15762
+    #   revision: 13
     kubernetesViewsNamespaces: # https://grafana.com/grafana/dashboards/15758-kubernetes-views-namespaces/
       gnetId: 15758
       revision: 24
