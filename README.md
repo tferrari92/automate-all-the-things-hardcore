@@ -31,6 +31,8 @@
 - My-App Backend now logs every time it recieves a request
 - Redis DBs are password protected
 
+<br/>
+
 ## Other editions
 - [Regular edition](https://github.com/tferrari92/automate-all-the-things)
 - [Insane edition](https://github.com/tferrari92/automate-all-the-things-insane)
