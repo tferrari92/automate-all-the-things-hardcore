@@ -32,8 +32,8 @@
 - Redis DBs are password protected
 
 ## Other editions
-- [Regular](https://github.com/tferrari92/automate-all-the-things)
-- [Insane](https://github.com/tferrari92/automate-all-the-things-insane)
+- [Regular edition](https://github.com/tferrari92/automate-all-the-things)
+- [Insane edition](https://github.com/tferrari92/automate-all-the-things-insane)
 
 <br/>
 
