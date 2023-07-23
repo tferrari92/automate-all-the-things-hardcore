@@ -27,9 +27,13 @@
   - Monitoring with Prometheus
   - Logging with Loki
   - Visualization with Grafana
-- Addition of AWS EBS CSI Driver to manage EBS volumes
+- Addition of AWS Elastic Block Store (p to manage persistent volumes
 - My-App Backend now logs every time it recieves a request
 - Redis DBs are password protected
+
+## Other editions
+- [Regular](https://github.com/tferrari92/automate-all-the-things)
+- [Insane](https://github.com/tferrari92/automate-all-the-things-insane)
 
 <br/>
 
@@ -124,9 +128,12 @@ Our app is a very simple static website, but I'm not spoiling it for you. You'll
 - Continuous Integration -> Azure DevOps
 - Continuous Deployment -> Helm & ArgoCD
 - Scripting -> Python
+- Monitoring -> Prometheus
+- Logging -> Loki
+- Observavility visualizations -> Grafana
   <br/>
 
-<p title="Logos Banner" align="center"> <img  src="https://i.imgur.com/Jd0Jve8.png"> </p>
+<p title="Logos Banner" align="center"> <img  src="https://i.imgur.com/kkpmjAL.png"> </p>
 
 <br/>
 
@@ -330,11 +337,11 @@ What does this pipeline do? If you take a look at the [00-deploy-infra.yml](azur
 Why do we need to store our tf state remotely and locking it? Well, this is probably not necessary for this excercise but it's a best practice when working on a team.<br>
 Storing it remotely means that everyone on the team can access and work with the same state file, and locking it means that only one person can access it at a time, this prevents state conflicts.
 
-Before we proceed with deploying out actual infrastructure, the pipeline will move the state file to the /terraform/aws/ directory, so our backend resources (the Bucket and DynamoDB Table) will also be tracked as part of our whole infrastructure. If you want to understand how this works, I suggest you watch [this video](https://youtu.be/7xngnjfIlK4?t=2483) where Sid from [DevOps Directive](https://www.youtube.com/@DevOpsDirective) explains it better than I ever could.
+Before we proceed with deploying out actual infrastructure, the pipeline will move the state file to the [terraform/aws](/terraform/aws) directory, so our backend resources (the Bucket and DynamoDB Table) will also be tracked as part of our whole infrastructure. If you want to understand how this works, I suggest you watch [this video](https://youtu.be/7xngnjfIlK4?t=2483) where Sid from [DevOps Directive](https://www.youtube.com/@DevOpsDirective) explains it better than I ever could.
 
 Now that the backend is set, we will deploy our actual infrastructure!
 
-So, what is our infra? Well, the main parts are the networking resources, the ElastiCache databases, the EC2 instance and the EKS cluster, along with the Cluster Autoscaler and an AWS Load Balancer Controller which will act as our Kubernetes Ingress Controller.
+So, what is our infra? Well, the main parts are the networking resources, the ElastiCache databases, the EC2 instance and the EKS cluster, along with the Cluster Autoscaler, EBS CSI driver and an AWS Load Balancer Controller which will act as our Kubernetes Ingress Controller.
 
 Having this AWS Load Balancer Controller means that for every Ingress resource we create in our cluster, an AWS Application Load Balancer will be automatically created. This is the native way to do it in EKS and it has a lot to benefits, but it creates an issue for us.<br>
 We want to track everything in our infra as IaC, but these automatically created Application Load Balancers won't be tracked in our Terraform... No worries, we'll take care of this issue in the Destroy All The Things Pipeline.<br>
@@ -388,33 +395,6 @@ pool:
 <br/>
 <br/>
 
-<!-- ## EKS Deployment Pipeline VIEJO
-
-2. Go to "Pipelines" under "Pipelines" on the left side menu.
-3. Click on "New pipeline".
-4. Select "GitHub".
-6. Select the repo, it should be "<your-github-username>/automate-all-the-things"
-6. Select "Existing Azure Pipelines YAML file".
-9. Under "Branch" select "main" and under "Path" select "/azure-devops/01-deploy-eks.yml". Click "Continue".
-11. Click on "Run". -->
-<!-- 9. Rename the pipeline to "deploy-eks". On the Pipelines screen, click on the three-dot menu to see the Rename/move option. -->
-<!-- 10. When it's finished, the KubeConfig file will be exported as an artifact. You'll find it in the pipeline run screen. Download it, NO PARA SERVICE CONNECTION PERO SI PARA TOCAR KUBECTL A MANO DESDE LOCAL we'll need it to create the Kubernetes service connection. -->
-
-<!-- <br>
-
-#### Configure AWS CLI and EKS Cluster
-To check that everything went OK we will connect to our cluster from our local machine. Use the following commands, you'll need to input your AWS info. When prompted for "Default output format" just press enter.
-```bash
-aws configure
-aws eks update-kubeconfig --name <your-app-name>-cluster --region <your-aws-region>
-```
-
-To visualize our resource we can now use:
-```bash
-kubectl get all --all-namespaces
-```
--->
-
 # ARGOCD DEPLOYMENT PIPELINE
 
 ## Description
@@ -424,12 +404,11 @@ We won't go into what ArgoCD is, for that you have [this video](https://youtu.be
 This pipeline will use the [ArgoCD Helm Chart](helm/argo-cd/) in our repo to deploy ArgoCD into our EKS.<br>
 The first thing it will do is run the necessary tasks to connect to our the cluster. After this, ArgoCD will be installed, along with it's Ingress.
 
-As I explained before, the Ingress will automatically create an AWS Application Load Balancer. This LB takes a few moments to become active, so our pipeline will wait until it is ready.
-When it's ready, the pipeline will get it's URL and admin account password. These will be exported as an artifact.
-
-Finally, it will create the ArgoCD [application resources](argo-cd/) for our app, which will be watching the [/helm/my-app/backend](helm/my-app/backend) and [/helm/my-app/frontend](helm/my-app/frontend) directories in our repo, and automatically create all the resources it finds and apply any future changes me make there. The [/helm/my-app directory](helm/my-app) simulates what would be our K8S infrastructure repository.
+After this, it will create the necessary resources for ArgoCD to be self-managed and to apply the  [App of Apps pattern](https://youtu.be/2pvGL0zqf9o). ArgoCD will be watching the helm charts in the [helm](helm) directory in our repo, it will automatically create all the resources it finds and apply any future changes me make there. The [helm/infra](helm/my-app) and [helm/my-app](helm/my-app) directories simulates what would be our K8S infrastructure repositories would be.
 
 If you want to know more about Helm, [here's another Nana video](https://youtu.be/-ykwb1d0DXU).
+
+Finally the pipeline will get the ArgoCD web UI URL and admin account password and export them as an artifact. You might need to wait a few seconds for the URL to be active, this is because an AWS Load Balancer takes a little time to be deployed.
 
 <br/>
 
