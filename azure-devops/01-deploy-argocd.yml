@@ -85,8 +85,6 @@ steps:
     done
     kubectl get ingress -n argocd $(kubectl get ingress -n argocd | awk 'NR>1{print $1}') -o=jsonpath="{'http://'}{.status.loadBalancer.ingress[].hostname}{'\n'}" > argocd-access.txt
     echo "admin" >> argocd-access.txt
-    # PROBANDO SI ES UNA CUESTION DE TIEMPO. BORRAR!
-    # sleep 60
     while [[ $(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}") == '' ]]; do
       echo "Secret is not ready. Checking again in 5 seconds..."
       sleep 5

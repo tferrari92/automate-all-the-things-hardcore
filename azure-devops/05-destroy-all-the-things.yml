@@ -46,16 +46,6 @@ jobs:
   - script: | 
       kubectl delete -n argocd applications.argoproj.io argocd-apps
       kubectl delete -n argocd applications.argoproj.io --all
-
-      # kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-back-dev
-      # kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-back-stage
-      # kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-back-prod
-      # kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-front-dev
-      # kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-front-stage
-      # kubectl delete -n argocd applications.argoproj.io $(APP_NAME)-front-prod
-      # kubectl delete -n argocd applications.argoproj.io grafana
-      # kubectl delete -n argocd applications.argoproj.io loki-stack
-      # kubectl delete -n argocd applications.argoproj.io prometheus
       helm uninstall -n argocd argocd
     displayName: 'Delete Applications & ArgoCD'
 
