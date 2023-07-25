@@ -34,6 +34,7 @@
 <br/>
 
 ## Other editions
+
 - [Regular edition](https://github.com/tferrari92/automate-all-the-things)
 - [Insane edition](https://github.com/tferrari92/automate-all-the-things-insane)
 
@@ -82,7 +83,7 @@
 
 I believe in a world where all that's expected of me is to enjoy life, lay on the couch, play COD and have existential crises.
 
-I wish I could automate cooking, cleaning, working, doing taxes, making friends, dating, writing READMEs... Hell, I'd even automate playing with my stupid kids if I could.
+I wish I could automate cooking, cleaning, working, doing taxes, making friends, dating and even writing stupid READMEs.
 
 But technology hasn't quite catched up to my level of laziness yet, so I've taken some inspiration from Thanos and said ["Fine... I'll do it myself"](https://www.youtube.com/watch?v=EzWNBmjyv7Y).
 
@@ -286,26 +287,6 @@ These are needed for Terraform to be able to deploy our AWS infrastructure.
 
 <br/>
 
-<!-- ## Allow push to GitHub NOT NECESSARY!!!
-
-We will need to push changes to the GitHub repo. By default, repositories are allowed to be read from but not written to, so we need to do a little extra configuration.
-
-1. Go to Project setting > Repositories (under Repos) > Select your repo > Security tab > Users > <your-project-name> Build Service (<your-org-name>)
-   CHEKEAR CUALES SON REALMENTE NECESARIAS!!!!!!!!!!!!!!!!!!!!!!!!
-2. "Bypass policies when pushing", "Contribute", "Create Tag" and "Read" should be set to "Allow".
-<p title="Guide" align="center"> <img width="700" src="https://i.imgur.com/NzYh5KJ.png"> </p>
-
-<br/> -->
-
-<!-- NO HACE FALTA PORQ SE CREA SOLA CON EL NOMBRE DE USERNEAME DE GITHUB -->
-<!-- ### GitHub
-4. On the Service connectionlick on "New service connection" .
-5. Select AWS.
-6. Paste your Access Key ID and Secret Access Key.
-7. Under "Service connection name", write "aws".
-8. Select the "Grant access permission to all pipelines" option.
-9. Save. -->
-
 ## (Optional) Create an Azure self-hosted agent
 
 **If you have a hosted parallelism, you can skip this step.**<br/>
@@ -339,7 +320,7 @@ What does this pipeline do? If you take a look at the [00-deploy-infra.yml](azur
 Why do we need to store our tf state remotely and locking it? Well, this is probably not necessary for this excercise but it's a best practice when working on a team.<br>
 Storing it remotely means that everyone on the team can access and work with the same state file, and locking it means that only one person can access it at a time, this prevents state conflicts.
 
-Before we proceed with deploying out actual infrastructure, the pipeline will move the state file to the [terraform/aws](/terraform/aws) directory, so our backend resources (the Bucket and DynamoDB Table) will also be tracked as part of our whole infrastructure. If you want to understand how this works, I suggest you watch [this video](https://youtu.be/7xngnjfIlK4?t=2483) where Sid from [DevOps Directive](https://www.youtube.com/@DevOpsDirective) explains it better than I ever could.
+Before we proceed with deploying out actual infrastructure, the pipeline will move the state file to the [terraform/aws/ directory](/terraform/aws/), so our backend resources (the Bucket and DynamoDB Table) will also be tracked as part of our whole infrastructure. If you want to understand how this works, I suggest you watch [this video](https://youtu.be/7xngnjfIlK4?t=2483) where Sid from [DevOps Directive](https://www.youtube.com/@DevOpsDirective) explains it better than I ever could.
 
 Now that the backend is set, we will deploy our actual infrastructure!
 
@@ -362,6 +343,8 @@ resource "aws_instance" "ec2_instance" {
 Commit the changes and run the pipeline again. The backend deployment step will fail, so the pipeline will finish with a warning, you can ignore it.
 
 The pipeline will also modify the [/helm/my-app/backend/environments](helm/my-app/backend/environments) files on the repo. It will get the endpoints for each ElastiCache DB from terraform outputs and include them in the values of each environment.
+
+Oh and lastly... it will export an artifact with the instructions on how to connect to the EC2 instance.
 
 <br/>
 
@@ -406,7 +389,7 @@ We won't go into what ArgoCD is, for that you have [this video](https://youtu.be
 This pipeline will use the [ArgoCD Helm Chart](helm/argo-cd/) in our repo to deploy ArgoCD into our EKS.<br>
 The first thing it will do is run the necessary tasks to connect to our the cluster. After this, ArgoCD will be installed, along with it's Ingress.
 
-After this, it will create the necessary resources for ArgoCD to be self-managed and to apply the  [App of Apps pattern](https://youtu.be/2pvGL0zqf9o). ArgoCD will be watching the helm charts in the [helm](helm) directory in our repo, it will automatically create all the resources it finds and apply any future changes me make there. The [helm/infra](helm/my-app) and [helm/my-app](helm/my-app) directories simulates what would be our K8S infrastructure repositories would be.
+After this, it will create the necessary resources for ArgoCD to be self-managed and to apply the [App of Apps pattern](https://youtu.be/2pvGL0zqf9o). ArgoCD will be watching the helm charts in the [helm](helm) directory in our repo, it will automatically create all the resources it finds and apply any future changes me make there. The [helm/infra](helm/my-app) and [helm/my-app](helm/my-app) directories simulates what would be our K8S infrastructure repositories would be.
 
 If you want to know more about Helm, [here's another Nana video](https://youtu.be/-ykwb1d0DXU).
 
@@ -427,7 +410,7 @@ Finally the pipeline will get the ArgoCD web UI URL and admin account password a
 9. When it's done, the access file will be exported as an artifact. You'll find it in the pipeline run screen. Download it to see the URL and credentials.
 <p title="Guide" align="center"> <img width="700" src="https://i.imgur.com/UtZyCCe.png"> </p>
 
-10. You can now access the ArgoCD UI, where you should find three applications running but in a "Progressing/Degraded" state. This is because we haven't built our app and pushed it to DockerHub yet. Let's take care of that next.
+10. You can now access the ArgoCD UI, if it's not ready just hit refresh every few seconds. Here you should find all the applications. Three will be under the "argocd" project, these are necessary for ArgoCD self-management. Another six will be under the "my-app" project which manage our app's backend and frontend in the three environments. These will be in a "Progressing/Degraded" state. This is because we haven't built our app and pushed it to DockerHub yet. Let's take care of that next.
 
 <br/>
 <br/>

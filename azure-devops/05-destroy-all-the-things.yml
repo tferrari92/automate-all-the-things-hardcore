@@ -18,14 +18,11 @@ pool:
 
 jobs:
 - job: DeleteK8SResources
-  displayName: 'Delete Kubernetes Resources'
+  displayName: 'Delete ingresses'
   steps:
-
-  - task: HelmInstaller@0
+  - task: KubectlInstaller@0
     inputs:
-      displayName: Install helm
-      helmVersion: '3.11.2'
-      installKubectl: true
+      kubectlVersion: '1.27.1'
 
   - task: AWSCLI@1
     displayName: 'Update KubeConfig'
@@ -42,12 +39,14 @@ jobs:
       echo -e "[default]\nregion = $(AWS_REGION)"> ~/.aws/config 
     displayName: 'Configure AWS Profile'
 
-  # Before deleting all Ingresses we eliminate ArgoCD because if we don't, it will re-deploy the Ingresses, automatically creating untracked AWS Application Load Balancers, which would mess with the terraform destroy  
+  # Before deleting all Ingresses we delete all ArgoCD applications because if we don't, it will re-deploy the Ingresses, automatically creating untracked AWS Application Load Balancers, which would mess with the terraform destroy  
   - script: | 
+      # We delete app of apps application
       kubectl delete -n argocd applications.argoproj.io argocd-apps
+
+      # We delete every other application
       kubectl delete -n argocd applications.argoproj.io --all
-      helm uninstall -n argocd argocd
-    displayName: 'Delete Applications & ArgoCD'
+    displayName: 'Delete all ArgoCD applications'
 
   # Before deleting all infra we make sure there are no existing ingresses so the terraform destroy isn't messed up by the existance of untracked AWS Application Load Balancers
   - script: | 
@@ -57,7 +56,7 @@ jobs:
 
 
 - job: DeleteAWSInfrastructure
-  displayName: 'Delete AWS Infrastructure'
+  displayName: 'Delete AWS infrastructure'
   dependsOn: DeleteK8SResources
   steps:
   - task: TerraformInstaller@0
