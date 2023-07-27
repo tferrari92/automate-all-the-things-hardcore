@@ -22,4 +22,3 @@
 #       selfHeal: true
 #     syncOptions:
 #       - CreateNamespace=true
-#       - ServerSideApply=true # Required: https://foxutech.medium.com/how-to-fix-too-long-must-have-at-most-262144-bytes-in-argocd-2a00cddbbe99 - https://argo-cd.readthedocs.io/en/stable/user-guide/sync-options/#server-side-apply  
