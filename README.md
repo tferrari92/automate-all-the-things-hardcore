@@ -17,7 +17,7 @@
     <a  href="/docs/readme_es.md">Versión en Español</a>
 </p> -->
 
-<p title="All The Things" align="center"> <img src="https://i.imgur.com/N1xmAHM.jpg"> </p>
+<p title="All The Things" align="center"> <img src="https://i.imgur.com/sBWPFxG.jpg"> </p>
 
 # **HARDCORE EDITION**
 
