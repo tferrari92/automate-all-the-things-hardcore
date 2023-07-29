@@ -22,4 +22,3 @@
 #       selfHeal: true
 #     syncOptions:
 #       - CreateNamespace=true
-#       - ServerSideApply=true # Required: https://argo-cd.readthedocs.io/en/stable/user-guide/sync-options/#server-side-apply
