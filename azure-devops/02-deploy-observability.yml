@@ -25,11 +25,11 @@ stages:
   - job: DeployPrometheusJob
     displayName: 'Deploy Prometheus Job'
     steps:
-    # # In this case it's necessary to specify the checkout with the persistCredential options set to true. This will enable us to push the changes to the repo.
+    # In this case it's necessary to specify the checkout with the persistCredential options set to true. This will enable us to push the changes to the repo.
     - checkout: self
       persistCredentials: true
 
-     # Every time the pipeline performs a "checkout" step it will checkout the same commit, so we need this step to pull for the changes commited in the previous stage   
+    # We update the local repo with a pull just in case there have been any recent modifications
     - script: |
         git pull origin main
       displayName: Update repo
@@ -56,7 +56,7 @@ stages:
   - job: DeployLokiJob
     displayName: 'Deploy Loki Job'
     steps:
-    # # In this case it's necessary to specify the checkout with the persistCredential options set to true. This will enable us to push the changes to the repo.
+    # In this case it's necessary to specify the checkout with the persistCredential options set to true. This will enable us to push the changes to the repo.
     - checkout: self
       persistCredentials: true
 
@@ -87,7 +87,7 @@ stages:
   - job: DeployGrafanaJob
     displayName: 'Deploy Grafana Job'
     steps:
-    # # In this case it's necessary to specify the checkout with the persistCredential options set to true. This will enable us to push the changes to the repo.
+    # In this case it's necessary to specify the checkout with the persistCredential options set to true. This will enable us to push the changes to the repo.
     - checkout: self
       persistCredentials: true
 
@@ -129,19 +129,16 @@ stages:
         awsArguments: '--name $(APP_NAME)-cluster --region $(AWS_REGION)'
     
     - script: |
-        while [[ $(kubectl -n observability get ingress $(kubectl get ingress -n observability | awk 'NR>1{print $1}') -o 'jsonpath={.status.loadBalancer.ingress[0].hostname}') == '' ]]; do
+        while [[ $(kubectl -n observability get ingress grafana -o 'jsonpath={.status.loadBalancer.ingress[0].hostname}') == '' ]]; do
           echo "Ingress is not ready. Checking again in 5 seconds..."
           sleep 5
         done
-        kubectl get ingress -n observability $(kubectl get ingress -n observability | awk 'NR>1{print $1}') -o=jsonpath="{'http://'}{.status.loadBalancer.ingress[].hostname}{'\n'}" > grafana-access.txt
-       
+        kubectl get ingress -n observability grafana -o=jsonpath="{'http://'}{.status.loadBalancer.ingress[].hostname}{'\n'}" > grafana-access.txt
         echo "admin" >> grafana-access.txt
-        
         while [[ $(kubectl get secret -n observability grafana -o jsonpath="{.data.admin-password}") == '' ]]; do
           echo "Secret is not ready. Checking again in 5 seconds..."
           sleep 5
         done
-        
         echo $(kubectl -n observability get secret grafana -o jsonpath="{.data.admin-password}" | base64 -d) >> grafana-access.txt
       displayName: 'Save Access'
     
