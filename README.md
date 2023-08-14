@@ -27,7 +27,7 @@
   - Monitoring with Prometheus
   - Logging with Loki
   - Visualization with Grafana
-- Addition of AWS Elastic Block Store (p to manage persistent volumes
+- Addition of AWS Elastic Block Store (required to manage persistent volumes)
 - My-App Backend now logs every time it recieves a request
 - Redis DBs are password protected
 
