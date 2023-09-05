@@ -33,7 +33,7 @@
 
 <br/>
 
-### Other editions
+### Other editions:
 
 - [Regular edition](https://github.com/tferrari92/automate-all-the-things)
 - [Insane edition](https://github.com/tferrari92/automate-all-the-things-insane)
