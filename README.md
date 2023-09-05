@@ -33,10 +33,10 @@ This Hardcore Edition builds upon the [Regular Edition](https://github.com/tferr
 - My-App Backend now logs every time it recieves a request
 - Redis DBs are password protected
 
-
-### Other editions:
-- [Regular Edition](https://github.com/tferrari92/automate-all-the-things)
-- [Insane Edition](https://github.com/tferrari92/automate-all-the-things-insane)
+### Versions in order of complexity:
+1. [Regular Edition](https://github.com/tferrari92/automate-all-the-things)
+2. [Hardcore Edition](https://github.com/tferrari92/automate-all-the-things-hardcore)
+3. [Insane Edition](https://github.com/tferrari92/automate-all-the-things-insane)
 
 <br/>
 
