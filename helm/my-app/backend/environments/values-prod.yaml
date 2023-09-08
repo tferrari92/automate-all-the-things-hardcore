@@ -6,3 +6,6 @@ deployment:
   replicas: 1
   env:
     redis_host: # This value was modified by the deploy-infra pipeline
+
+secret:
+  redis_pass: automate-all-the-things-prod
