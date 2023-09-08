@@ -21,8 +21,8 @@ resource "aws_elasticache_replication_group" "elasticache-replication-group-dev"
 
   security_group_ids = [aws_security_group.databases.id]
 
-  # transit_encryption_enabled = true
-  # auth_token =  "automate-all-the-things"
+  transit_encryption_enabled = true
+  auth_token =  "automate-all-the-things-dev"
 
   cluster_mode {
     replicas_per_node_group = 1
@@ -46,6 +46,9 @@ resource "aws_elasticache_replication_group" "elasticache-replication-group-stag
 
   security_group_ids = [aws_security_group.databases.id]
 
+  transit_encryption_enabled = true
+  auth_token =  "automate-all-the-things-stage"
+
   cluster_mode {
     replicas_per_node_group = 1
   }
@@ -67,6 +70,9 @@ resource "aws_elasticache_replication_group" "elasticache-replication-group-prod
   automatic_failover_enabled = false # Disable cluster mode
 
   security_group_ids = [aws_security_group.databases.id]
+
+  transit_encryption_enabled = true
+  auth_token =  "automate-all-the-things-prod"
 
   cluster_mode {
     replicas_per_node_group = 1
