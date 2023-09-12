@@ -452,7 +452,7 @@ What this pipeline does is just uncommenting the contents of the alreday existin
 
 <br/>
 <br/>
-<p title="Gitops Chills" align="center"> <img width="460" src="https://i.imgur.com/kGQUUTw.jpg"> </p>
+<p title="Feelings of power" align="center"> <img width="460" src="https://i.imgur.com/o4LuRu7.jpg"> </p>
 <br/>
 <br/>
 
