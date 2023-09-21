@@ -431,7 +431,8 @@ This pipeline is just overdoing it tbh. Since we're now using [ArgoCD's App of A
 
 That's it! As soon as ArgoCD pulls the changes on the repo, our new service will be automatically deployed. Assuming your helm chart is correct, everything should work as intended.
 
-What this pipeline does is just uncommenting the contents of the already existing application.yaml's for [Prometheus](argo-cd/applications/infra/prometheus-application.yaml), [Loki](argo-cd/applications/infra/loki-stack-application.yaml) and [Grafana](argo-cd/applications/infra/grafana-application.yaml). You can access the Grafana web UI by clicking on little arrow icon the grafana application in ArgoCD's web UI. The default user is "admin" and the password is "automate-all-the-things". You can change the password in the [Grafana helm chart custom-values.yaml file](helm/infra/grafana/values-custom.yaml).
+What this pipeline does is just uncommenting the contents of the already existing application.yaml's for [Prometheus](argo-cd/applications/infra/prometheus-application.yaml), [Loki](argo-cd/applications/infra/loki-stack-application.yaml) and [Grafana](argo-cd/applications/infra/grafana-application.yaml). 
+
 
 <br/>
 
@@ -445,10 +446,7 @@ What this pipeline does is just uncommenting the contents of the already existin
 6. Under "Branch" select "main" and under "Path" select "/azure-devops/02-deploy-observability.yml". Click "Continue".
 7. If you DON'T have a hosted parallelism, you'll need to do the same thing as in point 10 from the [infrastructure deployment pipeline](#instructions).
 8. Click on "Run".
-9. When it's done, the Grafana access file will be exported as an artifact. You'll find it in the pipeline run screen. Download it to see the URL and credentials.
-<p title="Guide" align="center"> <img width="700" src="https://i.imgur.com/UtZyCCe.png"> </p>
-
-10. You can now access the Grafana UI, where you should find a few dashboards I've already set up for you.
+9. Once ArgoCD detects the changes and automatically deploys all of these resources, you'll be able to access the Grafana web UI by clicking on little arrow icon the grafana application in ArgoCD's web UI. The default user is "admin" and the password is "automate-all-the-things". There you should find a few dashboards I've already set up for you. You can change the password in the [Grafana helm chart custom-values.yaml file](helm/infra/grafana/values-custom.yaml). 
 
 <br/>
 <br/>
