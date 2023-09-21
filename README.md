@@ -431,7 +431,7 @@ This pipeline is just overdoing it tbh. Since we're now using [ArgoCD's App of A
 
 That's it! As soon as ArgoCD pulls the changes on the repo, our new service will be automatically deployed. Assuming your helm chart is correct, everything should work as intended.
 
-What this pipeline does is just uncommenting the contents of the alreday existing application.yaml's for [Prometheus](argo-cd/applications/infra/prometheus-application.yaml), [Loki](argo-cd/applications/infra/loki-stack-application.yaml) and [Grafana](argo-cd/applications/infra/grafana-application.yaml). You can access the Grafana web UI by clicking on little arrow icon the grafana application in ArgoCD's web UI. The default user is "admin" and the password is "automate-all-the-things". You can change the password in the [Grafana helm chart custom-values.yaml file](helm/infra/grafana/values-custom.yaml).
+What this pipeline does is just uncommenting the contents of the already existing application.yaml's for [Prometheus](argo-cd/applications/infra/prometheus-application.yaml), [Loki](argo-cd/applications/infra/loki-stack-application.yaml) and [Grafana](argo-cd/applications/infra/grafana-application.yaml). You can access the Grafana web UI by clicking on little arrow icon the grafana application in ArgoCD's web UI. The default user is "admin" and the password is "automate-all-the-things". You can change the password in the [Grafana helm chart custom-values.yaml file](helm/infra/grafana/values-custom.yaml).
 
 <br/>
 
