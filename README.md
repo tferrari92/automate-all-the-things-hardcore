@@ -55,7 +55,6 @@ This Hardcore Edition builds upon the [Regular Edition](https://github.com/tferr
   - [Create AWS service connection](#create-aws-service-connection)
   - [Create DockerHub service connection](#create-dockerhub-service-connection)
   - [Create AWS-keys variable group](#create-aws-keys-variable-group)
-  <!-- - [Allow push to GitHub](#allow-pushes-to-github) -->
   - [Create an Azure self-hosted agent](#optional-create-an-azure-self-hosted-agent)
 - [AWS Infrastructure Deployment Pipeline](#aws-infrastructure-deployment-pipeline)
   - [Description](#description)
@@ -432,7 +431,7 @@ This pipeline is just overdoing it tbh. Since we're now using [ArgoCD's App of A
 
 That's it! As soon as ArgoCD pulls the changes on the repo, our new service will be automatically deployed. Assuming your helm chart is correct, everything should work as intended.
 
-What this pipeline does is just uncommenting the contents of the alreday existing application.yaml's for [Prometheus](argo-cd/applications/infra/prometheus-application.yaml), [Loki](argo-cd/applications/infra/loki-stack-application.yaml) and [Grafana](argo-cd/applications/infra/grafana-application.yaml) and then providing the access information to Grafana UI as an artifact.
+What this pipeline does is just uncommenting the contents of the alreday existing application.yaml's for [Prometheus](argo-cd/applications/infra/prometheus-application.yaml), [Loki](argo-cd/applications/infra/loki-stack-application.yaml) and [Grafana](argo-cd/applications/infra/grafana-application.yaml). You can access the Grafana web UI by clicking on little arrow icon the grafana application in ArgoCD's web UI. The default user is "admin" and the password is "automate-all-the-things". You can change the password in the [Grafana helm chart custom-values.yaml file](helm/infra/grafana/values-custom.yaml).
 
 <br/>
 
@@ -611,77 +610,3 @@ Special thanks to all these wonderful YouTube people. This wouldn't have been po
 - [Anton Putra](https://www.youtube.com/@AntonPutra)
 
 Happy automating!
-
-<!-- DESCARTADO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-# (Optional) GET GITHUB PERSONAL ACCESS TOKEN
-
-**_If the repo you are using is public skip this step._**<br/>
-
-In your Github account:
-
-1. In the upper-right corner of any page, click your profile photo, then click Settings.
-2. In the left sidebar, click Developer settings.
-3. In the left sidebar, click Personal access tokens.
-4. Click Generate new token.
-5. In the "Note" field, give your token a descriptive name.
-6. To give your token an expiration, select Expiration, then choose a default option or click Custom to enter a date.
-7. Select the scopes you'd like to grant this token. To use your token to access repositories from the command line, select repo. A token with no assigned scopes can only access public information. For more information, see "Scopes for OAuth Apps".
-8. Click Generate token.
-9. Copy the new token to your clipboard, click.
-
-Set as environment variable
-
-```bash
-export AZURE_DEVOPS_EXT_GITHUB_PAT=<your-github-pat>
-```
-
-# 1. CREATE PIPELINE
-
-## 1.1 Azure CLI
-
-a. Install [azure cli](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
-
-```bash
-sudo curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-```
-
-b. Sign in:
-
-```bash
-az login
-```
-
-## 1.2 Azure DevOps CLI
-
-a. Add the [Azure DevOps extension](https://learn.microsoft.com/en-us/azure/devops/cli/?view=azure-devops)
-
-```bash
-az extension add --name azure-devops
-```
-
-## 1.3 Project & Pipeline
-
-a. Create project
-
-```bash
-az devops project create --name automate-all-the-things --org https://dev.azure.com/tomasferrari --verbose
-```
-
-b. Set organization and project as defaults
-
-```bash
-az devops configure --defaults  organization=https://dev.azure.com/tomasferrari project=automate-all-the-things
-```
-
-c. Create service-connection to github
-
-```bash
-az devops service-endpoint github create --name github-sc --github-url https://github.com/tferrari92/automate-all-the-things.git
-```
-
-d. Create pipeline
-
-```bash
-az pipelines create --name create-bucket --repository https://github.com/tferrari92/automate-all-the-things.git --branch main --yml-path azure-devops/deploy-aws-resources.yml --service-connection github-sc
-```
