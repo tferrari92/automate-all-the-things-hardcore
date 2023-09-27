@@ -462,7 +462,7 @@ You can change the password in the [Grafana helm chart custom-values.yaml file](
 
 Time to actually start the deployment of our app.
 
-Our app is made of two microservices (backend and frontend) and a database. Let's start with the backend (which also includes the db).
+Our app is made of two microservices (backend and frontend) and a database. Let's start with the backend.
 
 The [/my-app/backend directory](my-app/backend) on the repo is meant to represent the backend microservice application code repository. Here you'll find the code files and the corresponding Dockerfile for the backend service.
 
