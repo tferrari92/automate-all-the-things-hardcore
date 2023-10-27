@@ -75,6 +75,7 @@ This Hardcore Edition builds upon the [Regular Edition](https://github.com/tferr
   - [Description](#description-5)
   - [Instructions](#instructions-5)
 - [Conclusion](#conclusion)
+  - [On the next edition](#on-the-next-edition)
 
 <br/>
 
@@ -610,3 +611,16 @@ Special thanks to all these wonderful YouTube people. This wouldn't have been po
 - [Anton Putra](https://www.youtube.com/@AntonPutra)
 
 ### Happy automating!
+
+<br/>
+
+## On the next edition
+
+[Automate All The Things Insane Edition](https://github.com/tferrari92/automate-all-the-things-insane):
+
+- Prometheus Operator: We'll be needing to use PodMonitors and ServiceMonitors, so we'll deploy the kube-prometheus-stack Helm chart which also includes the Prometheus operator, instead of just plain Prometheus.
+- Service mesh with Istio
+- Ingress Gateway with Istio
+- Canary deployments with Flagger
+  - Flagger Load Tester included
+- Service mesh visualization with Kiali
