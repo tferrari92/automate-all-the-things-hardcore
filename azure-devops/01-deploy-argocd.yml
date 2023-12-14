@@ -46,7 +46,7 @@ steps:
 
 - script: | 
     helm install argocd -n argocd helm/infra/argo-cd --values helm/infra/argo-cd/values-custom.yaml --dependency-update --create-namespace
-  displayName: 'Deploy Argocd'
+  displayName: 'Deploy ArgoCD'
 
 # This deploys the necessary resources for ArgoCD to be able to manage itslef
 - script: |    
