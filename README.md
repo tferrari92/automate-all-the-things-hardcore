@@ -620,9 +620,8 @@ Special thanks to all these wonderful YouTube people. This wouldn't have been po
 
 [Automate All The Things Insane Edition](https://github.com/tferrari92/automate-all-the-things-insane):
 
-- Prometheus Operator: We'll be needing to use PodMonitors and ServiceMonitors, so we'll deploy the kube-prometheus-stack Helm chart which also includes the Prometheus operator, instead of just plain Prometheus.
-- Service mesh with Istio
-- Ingress Gateway with Istio
-- Canary deployments with Flagger
-  - Flagger Load Tester included
-- Service mesh visualization with Kiali
+- We'll switch to the kube-prometheus-stack Helm chart. We'll be needing to use PodMonitors and ServiceMonitors, so we'll deploy this chart which also includes the Prometheus operator, instead of just plain Prometheus.
+- We'll implement service mesh with Istio
+- We'll implement Ingress Gateway with Istio Gateway
+- We'll implement canary deployments with Flagger
+- We'll implement service mesh visualization with Kiali
