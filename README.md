@@ -461,7 +461,7 @@ You can change the password in the [Grafana helm chart custom-values.yaml file](
 
 <br/>
 <br/>
-<p title="Feelings of power" align="center"> <img width="460" src="https://i.imgur.com/o4LuRu7.jpg"> </p>
+<p title="Kill chain" align="center"> <img width="460" src="https://i.imgur.com/KcSXPER.jpg"> </p>
 <br/>
 <br/>
 
