@@ -39,6 +39,12 @@ jobs:
         run: | 
           kubectl delete ingress --all --all-namespaces
 
+      # We also delete all EBS volumes created through Persistent Volumes
+      - name: Delete Persisten Volumnes
+        run: | 
+            kubectl delete persistentvolumeclaims --all --all-namespaces
+            kubectl delete persistentvolumes --all --all-namespaces
+
   destroy-infra:
     runs-on: ubuntu-latest
     needs: destroy-k8s-resources
