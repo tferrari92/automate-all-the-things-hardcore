@@ -54,14 +54,9 @@ This Hardcore Edition builds upon the [Regular Edition](https://github.com/tferr
   - [Tools we'll be using](#tools-well-be-using)
   - [Disclaimer](#disclaimer)
 - [Local Setup](#local-setup)
-- [Azure DevOps Setup](#azure-devops-setup)
-  - [Create project](#create-project)
-  - [Install required plugins](#install-required-plugins)
+- [GitHub Actions Setup](#github-actions-setup)
   - [Get your AWS keys](#get-your-aws-keys)
-  - [Create AWS service connection](#create-aws-service-connection)
-  - [Create DockerHub service connection](#create-dockerhub-service-connection)
-  - [Create AWS-keys variable group](#create-aws-keys-variable-group)
-  - [Create an Azure self-hosted agent](#optional-create-an-azure-self-hosted-agent)
+  - [Create secrets for GitHub Actions](#create-secrets-for-github-actions)
 - [AWS Infrastructure Deployment Pipeline](#aws-infrastructure-deployment-pipeline)
   - [Description](#description)
   - [Instructions](#instructions)
@@ -104,7 +99,6 @@ Here's my attempt at making the world a better place. People in the future will 
 - [Active GitHub account](https://github.com/)
 - [Active DockerHub account](https://hub.docker.com/)
 - [Active AWS account](https://aws.amazon.com/)
-- [Active Azure DevOps account](https://azure.microsoft.com/en-us/free/)
 
 <br/>
 
@@ -116,7 +110,7 @@ Here's my attempt at making the world a better place. People in the future will 
 
 The purpose of this repo is not to give you an in depth explanation of the tools we'll be using, but to demonstrate how they can interact with each other to make the deployment of a whole infrastructure (with an application) as efficient and streamlined as possible.
 
-I want to show how IaC (Infrastructure as Code), Gitops and CI/CD (Continuous Integration/Continuous Deployment) can be merged for [unlimited power](https://www.youtube.com/watch?v=Sg14jNbBb-8).
+I want to show how IaC (Infrastructure as Code), GitOps and CI/CD (Continuous Integration/Continuous Deployment) can be merged for [unlimited power](https://www.youtube.com/watch?v=Sg14jNbBb-8).
 
 As you can see in the diagram, we'll be deploying an EKS Kubernetes cluster in AWS. Inside the cluster we'll have three environments where our app will be deployed. The app is made up of two microservices: frontend and backend. Each frontend will be accesible to the public internet through a Load Balancer.
 
@@ -134,7 +128,7 @@ Our app is a very simple static website, but I'm not spoiling it for you. You'll
 - Infrastructure as Code -> Terraform
 - Containerization -> Docker
 - Container Orchestration -> Kubernetes
-- Continuous Integration -> Azure DevOps
+- Continuous Integration -> GitHub Actions
 - Continuous Deployment -> Helm & ArgoCD
 - Scripting -> Python
 - Monitoring -> Prometheus
@@ -148,7 +142,7 @@ Our app is a very simple static website, but I'm not spoiling it for you. You'll
 
 ## Disclaimer
 
-This is not a free project, it will cost you between $1 US dollars and $10 depending on how long you run the resources for. That's assuming you run them for a few hours tops, not days. Always remember to run the [destroy-all-the-things pipeline](/azure-devops/05-destroy-all-the-things.yml) when you are done.
+This is not a free project, it will cost you between $1 US dollars and $10 depending on how long you run the resources for. That's assuming you run them for a few hours tops, not days. Always remember to run the [destroy-all-the-things pipeline](/.github/workflows/05-destroy-all-the-things.yaml) when you are done.
 
 Some things could have been further automated but I prioritized modularization and separation of concerns.<br>
 
@@ -198,7 +192,7 @@ git commit -m "customized repo"
 git push
 ```
 
-5. Awesome! You can now proceed with the Azure DevOps setup.
+5. Awesome! You can now proceed with the GitHub Actions setup.
 
 <br/>
 <br/>
@@ -206,31 +200,13 @@ git push
 <br/>
 <br/>
 
-# **AZURE DEVOPS SETUP**
+# **GITHUB ACTIONS SETUP**
 
 Before creating our pipelines we need to get a few things set up:<br>
 
-## Create project
-
-1. Sign in [Azure DevOps](https://dev.azure.com/).
-2. Go to "New project" on the top-right.
-3. Write the name for your project and under "Visibility" select "Private".
-4. Click "Create".
-
-<br/>
-
-## Install required plugins
-
-These plugins are required for the pipelines we'll be creating. Click on "Get it free", select your organization and then click "Install".
-                                    
-1. Install [Terraform Tasks plugin](https://marketplace.visualstudio.com/items?itemName=JasonBJohnson.azure-pipelines-tasks-terraform) for Azure Pipelines
-1. Install [AWS Toolkit plugin](https://marketplace.visualstudio.com/items?itemName=AmazonWebServices.aws-vsts-tools) for Azure Pipelines
-
-<br/>
-
 ## Get your AWS keys
 
-These will be required for Azure DevOps to connect to your AWS account.
+These will be required for our workflows to connect to your AWS account.
 
 1. Open the IAM console at https://console.aws.amazon.com/iam/.
 2. On the search bar look up "IAM".
@@ -246,65 +222,19 @@ These will be required for Azure DevOps to connect to your AWS account.
 
 <br/>
 
-## Create AWS service connection
+## Create secrets for GitHub Actions
 
-This service connection is required for our Azure DevOps pipelines to interact with AWS.
+1. Go to the Settings tab of your GitHub repo.
+2. On the left-side menu click "Secrets and variables" and then on "Actions".
+3. Under "Repository secrets" click on "New repository secret".
+<p title="Guide" align="center"> <img width="700" src="https://i.imgur.com/656voMj.png"> </p>
 
-1. Go back to Azure DevOps and open your project.
-2. Go to Project settings on the left side menu (bottom-left corner).
-3. On the left side menu, under "Pipelines", select "Service connections".
-4. Click on "Create service connection".
-5. Select AWS, click "Next".
-6. Paste your Access Key ID and Secret Access Key.
-7. Under "Service connection name", write "aws".
-8. Select the "Grant access permission to all pipelines" option.
-9. Save.
-
-<br/>
-
-## Create DockerHub service connection
-
-This service connection is required for our Azure DevOps pipelines to be able to push images to your DockerHub registry.
-
-1. While on the "Service connections" screen, click on "New service connection" on the top-right.
-2. Select "Docker Registry", click "Next".
-3. Under "Registry type" select "Docker Hub".
-4. Input your Docker ID and Password.
-5. Under "Service connection name", write "dockerhub".
-6. Select the "Grant access permission to all pipelines" option.
-7. Click on "Verify and save".
-
-<br/>
-
-## Create AWS keys variable group
-
-These are needed for Terraform to be able to deploy our AWS infrastructure.
-
-1. On the left side menu under "Pipelines" go to "Library"
-2. Click on "+ Variable group".
-3. Under "Variable group name" write "aws-keys".
-4. Add the following variables pasting on the "Value" field your AWS keys:
-
-- aws_access_key_id
-- aws_secret_access_key
-
-5. Click on the lock icon on each variable.
-6. Click on "Save".
-7. Click on "Pipeline permissions" and give it "Open access". This means all our pipelines will be able to use these variables.
-<p title="Guide" align="center"> <img width="700" src="https://i.imgur.com/aMzTx49.jpg"> </p>
-
-<br/>
-
-## (Optional) Create an Azure self-hosted agent
-
-**If you have a hosted parallelism, you can skip this step.**<br/>
-
-A hosted parallelism basically means that Azure will spin up a server in which to run your pipelines. You can purchase one or you can request a free parallelism by filling out [this form](https://aka.ms/azpipelines-parallelism-request).
-
-If you don't have a hosted parallelism, you will have to run the pipeline in a **self-hosted agent**.
-This means you'll install an Azure DevOps Agent on your local machine, which will receive and execute the pipeline jobs.
-
-To install a self-hosted agent on your machine, you can follow the official documentation [here](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/agents?view=azure-devops&tabs=browser#install).
+4. Under "Name" write "AWS_ACCESS_KEY_ID" and under "Secret" paste the corresponding value. 
+5. Click "Add secret" to save.
+6. Repeat the process for:
+- AWS_SECRET_ACCESS_KEY
+- DOCKER_USERNAME
+- DOCKER_PASSWORD
 
 <br/>
 <br/>
@@ -323,7 +253,7 @@ To install a self-hosted agent on your machine, you can follow the official docu
 
 Our first pipeline, the one that will provide us with all the necessary infrastructure.
 
-What does this pipeline do? If you take a look at the [00-deploy-infra.yml](azure-devops/00-deploy-infra.yml) file, you'll see that the first thing we do is use the Terraform plugin we previously installed to deploy a S3 Bucket and DynamoDB table. These two resources will allow us to store our terraform state remotely and give it locking functionality.<br/>
+What does this pipeline do? If you take a look at the [00-deploy-infra.yml](/.github/workflows/00-deploy-infra.yaml) file, you'll see that the first thing we do is use the Terraform plugin we previously installed to deploy a S3 Bucket and DynamoDB table. These two resources will allow us to store our terraform state remotely and give it locking functionality.<br/>
 
 Why do we need to store our tf state remotely and locking it? Well, this is probably not necessary for this exercise but it's a best practice when working on a team.<br>
 Storing it remotely means that everyone on the team can access and work with the same state file, and locking it means that only one person can access it at a time, this prevents state conflicts.

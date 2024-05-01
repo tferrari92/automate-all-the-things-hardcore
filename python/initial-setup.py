@@ -82,14 +82,14 @@ print_gradually(
 github_username = input()
 
 print_gradually(
-    "Got it! In what AWS region will you be deploying your resources? (e.g. 'us-east-2'): ")
+    "Got it! In what AWS region will you be deploying your resources? (e.g. 'us-east-1'): ")
 aws_region = input()
 
 print_gradually("Good choice! We're almost done. What's your DockerHub username?: ")
 dockerhub_username = input()
 
-print_gradually("Perfect! Last thing... You'll recieve just one pipeline notification through email. Please provide me with the email you used for your Azure DevOps account: ")
-user_email = input()
+# print_gradually("Perfect! Last thing... You'll recieve just one pipeline notification through email. Please provide me with the email you used for your Azure DevOps account: ")
+# user_email = input()
 
 print_gradually("Give me a sec... ")
 
@@ -100,7 +100,7 @@ data = {
     "AATT_GITHUB_USERNAME": github_username,
     "AATT_AWS_REGION": aws_region,
     "AATT_DOCKERHUB_USERNAME": dockerhub_username,
-    "AATT_USER_EMAIL": user_email,
+    # "AATT_USER_EMAIL": user_email,
 }
 
 
@@ -126,15 +126,14 @@ def search_and_replace(directory, replacements):
                              'loki-stack-application.yaml',
                              'grafana-application.yaml',
                              'argocd-application.yaml',
-                             'argocd-appprojects-application.yaml',
-                             'argocd-apps-application.yaml',
-                             '00-deploy-infra.yml',
-                             '01-deploy-argocd.yml',
-                             '02-deploy-monitoring.yml',
-                             '02-deploy-observability.yml',
-                             '03-build-and-deploy-backend.yml',
-                             '04-build-and-deploy-frontend.yml',
-                             '05-destroy-all-the-things.yml',
+                             'argocd-app-of-apps-application.yaml',
+                             'argocd-app-of-projects-application.yaml',
+                             '00-deploy-infra.yaml',
+                             '01-deploy-argocd.yaml',
+                             '02-deploy-observability.yaml',
+                             '03-build-and-deploy-backend.yaml',
+                             '04-build-and-deploy-frontend.yaml',
+                             '05-destroy-all-the-things.yaml',
                              'Chart.yaml',
                              'values.yaml',
                              'values-dev.yaml',

@@ -1,0 +1,69 @@
+name: 02-Deploy observability
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_REGION: AATT_AWS_REGION # This value was modified by the initial-setup python script
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+jobs:
+  deploy-prometheus:
+    name: Deploy Prometheus
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Uncomment the contents of prometheus-application.yaml
+        run: |
+          sed -i 's/^#//' argo-cd/applications/infra/prometheus-application.yaml
+      
+      - name: Push changes to GitHub
+        run: |
+          git config --global user.email "GitHubActions@DeployObservabilityWorkflow.com"
+          git config --global user.name "GitHub Actions - Deploy Observability Workflow"
+          git add argo-cd/applications/infra/prometheus-application.yaml
+          git commit -m "Uncommented content of argo-cd/applications/infra/prometheus-application.yaml by GitHub Actions"
+          git push
+
+
+  deploy-loki:
+    name: Deploy Loki
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Uncomment the contents of loki-stack-application.yaml
+        run: |
+          sed -i 's/^#//' argo-cd/applications/infra/loki-stack-application.yaml
+      
+      - name: Push changes to GitHub
+        run: |
+          git config --global user.email "GitHubActions@DeployObservabilityWorkflow.com"
+          git config --global user.name "GitHub Actions - Deploy Observability Workflow"
+          git add argo-cd/applications/infra/loki-stack-application.yaml
+          git commit -m "Uncommented content of argo-cd/applications/infra/loki-stack-application.yaml by GitHub Actions"
+          git push
+
+
+  deploy-grafana:
+    name: Deploy Grafana
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Uncomment the contents of grafana-application.yaml
+        run: |
+          sed -i 's/^#//' argo-cd/applications/infra/grafana-application.yaml
+      
+      - name: Push changes to GitHub
+        run: |
+          git config --global user.email "GitHubActions@DeployObservabilityWorkflow.com"
+          git config --global user.name "GitHub Actions - Deploy Observability Workflow"
+          git add argo-cd/applications/infra/grafana-application.yaml
+          git commit -m "Uncommented content of argo-cd/applications/infra/grafana-application.yaml by GitHub Actions"
+          git push
