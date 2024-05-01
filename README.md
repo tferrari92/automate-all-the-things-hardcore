@@ -319,18 +319,11 @@ Finally the pipeline will get the ArgoCD web UI URL and admin account password a
 
 ## Instructions
 
-1. Go to "Pipelines" under "Pipelines" on the left side menu.
-2. Click on "New pipeline".
-3. Select "GitHub".
-4. Select the repo, it should be "your-github-username/automate-all-the-things-hardcore"
-5. Select "Existing Azure Pipelines YAML file".
-6. Under "Branch" select "main" and under "Path" select "/azure-devops/01-deploy-argocd.yml". Click "Continue".
-7. If you DON'T have a hosted parallelism, you'll need to do the same thing as in point 10 from the [infrastructure deployment pipeline](#instructions).
-8. Click on "Run".
-9. When it's done, the access file will be exported as an artifact. You'll find it in the pipeline run screen. Download it to see the URL and credentials.
-<p title="Guide" align="center"> <img width="700" src="https://i.imgur.com/UtZyCCe.png"> </p>
-
-10. You can now access the ArgoCD UI, if it's not ready just hit refresh every few seconds. Here you should find all the applications. Three will be under the "argocd" project, these are necessary for ArgoCD self-management.<br>
+1. On your GitHub repo, go to the "Actions" tab.
+2. Click on the "01-Deploy ArgoCD" workflow.
+3. Click on "Run workflow" (Use workflow from Branch: main).
+4. When it's finished, the access file will be exported as an artifact. You'll find it in the workflow run screen under "Artifacts". Download it to see the URL and credentials.
+5. You can now access the ArgoCD UI, if it's not ready just hit refresh every few seconds. Here you should find all the applications. Three will be under the "argocd" project, these are necessary for ArgoCD self-management.<br>
 Another six will be under the "my-app" project. These manage our app's backend and frontend in the three environments. These will be in a "Progressing/Degraded" state. This is because we haven't built our app and pushed it to DockerHub yet. Let's take care of that next.
 
 <br/>
@@ -359,15 +352,10 @@ What this pipeline does is just uncommenting the contents of the already existin
 
 ## Instructions
 
-1. Go to "Pipelines" under "Pipelines" on the left side menu.
-2. Click on "New pipeline".
-3. Select "GitHub".
-4. Select the repo, it should be "your-github-username/automate-all-the-things-hardcore"
-5. Select "Existing Azure Pipelines YAML file".
-6. Under "Branch" select "main" and under "Path" select "/azure-devops/02-deploy-observability.yml". Click "Continue".
-7. If you DON'T have a hosted parallelism, you'll need to do the same thing as in point 10 from the [infrastructure deployment pipeline](#instructions).
-8. Click on "Run".
-9. Once ArgoCD detects the changes and automatically deploys all of these resources, you'll be able to access the Grafana web UI by clicking on the little arrow icon the grafana application in ArgoCD's web UI. The default user is "admin" and the password is "automate-all-the-things".<br>
+1. On your GitHub repo, go to the "Actions" tab.
+2. Click on the "02-Deploy observability" workflow.
+3. Click on "Run workflow" (Use workflow from Branch: main).
+4. Once ArgoCD detects the changes and automatically deploys all of these resources, you'll be able to access the Grafana web UI by clicking on the little arrow icon the grafana application in ArgoCD's web UI. The default user is "admin" and the password is "automate-all-the-things".<br>
 There you should find a few dashboards I've already set up for you.<br>
 You can change the password in the [Grafana helm chart custom-values.yaml file](helm/infra/grafana/values-custom.yaml). 
 
