@@ -328,7 +328,7 @@ Another six will be under the "my-app" project. These manage our app's backend a
 
 <br/>
 <br/>
-<p title="Gitops Chills" align="center"> <img width="460" src="https://i.imgur.com/kGQUUTw.jpg"> </p>
+<p title="Kill chain" align="center"> <img width="460" src="https://i.imgur.com/KcSXPER.jpg"> </p>
 <br/>
 <br/>
 
@@ -361,7 +361,7 @@ You can change the password in the [Grafana helm chart custom-values.yaml file](
 
 <br/>
 <br/>
-<p title="Kill chain" align="center"> <img width="460" src="https://i.imgur.com/KcSXPER.jpg"> </p>
+<p title="Gitops Chills" align="center"> <img width="460" src="https://i.imgur.com/kGQUUTw.jpg"> </p>
 <br/>
 <br/>
 
