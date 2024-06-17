@@ -40,8 +40,8 @@ This Hardcore Edition builds upon the [Regular Edition](https://github.com/tferr
 3. [Insane Edition](https://github.com/tferrari92/automate-all-the-things-insane)
 4. [Overload Edition](https://github.com/tferrari92/automate-all-the-things-overload)
 5. [Braindamage Edition](https://github.com/tferrari92/automate-all-the-things-braindamage)
+6. [Transcendence Edition](https://github.com/tferrari92/automate-all-the-things-transcendence)
 7. [Nirvana Edition](https://github.com/tferrari92/automate-all-the-things-nirvana)
-<!-- 6. [Transcendence Edition](https://github.com/tferrari92/automate-all-the-things-transcendence)  -->
 
 ### Spin-offs:
 - [Backstage Minikube Lab](https://github.com/tferrari92/backstage-minikube-lab)
